@@ -1,0 +1,11 @@
+.idea/codeStyles
+.idea/inspectionProfiles
+.idea/jsLibraryMappings.xml
+.idea/misc.xml
+.idea/sqldialects.xml
+
+*.iml
+
+frontend/node_modules
+
+backend/node_modules

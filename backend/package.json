@@ -1,0 +1,36 @@
+{
+  "name": "backend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "@monaco-editor/react": "^4.4.6",
+    "@types/sqlite3": "^3.1.8",
+    "bcrypt": "^5.1.0",
+    "compile-run": "^2.3.4",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "firebase": "^9.13.0",
+    "http-errors": "~1.6.3",
+    "install": "^0.13.0",
+    "morgan": "~1.9.1",
+    "node-docker-api": "^1.1.22",
+    "npm": "^8.19.3",
+    "pug": "2.0.0-beta11",
+    "sqlite3": "^5.1.2",
+    "uuidv4": "^6.2.13"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/express": "^4.17.14",
+    "@types/node": "^18.11.9",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.20",
+    "react-router-dom": "^6.4.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  }
+}

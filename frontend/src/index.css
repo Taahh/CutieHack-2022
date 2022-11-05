@@ -1,0 +1,24 @@
+:root {
+  --custom-color: #b39b3b;
+}
+body {
+  background-color: #313632;
+  overflow: hidden;
+}
+
+.gray-button {
+  background-color: var(--custom-color) !important;
+  border-color: var(--custom-color) !important;
+}
+
+.gray-button:hover {
+  transition: all 0.5s ease;
+  transform: scale(1.1);
+  background-color: #c98f06 !important;
+  border-color: #c98f06 !important;
+}
+
+
+.text-white {
+  color: white;
+}
