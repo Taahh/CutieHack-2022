@@ -37,6 +37,7 @@ APP.post("/room/submit", async (req, res) => {
 
 APP.get("/room/next", async (req, res) => {
     let newUser = new User(uuid(), `Guest${GAME_ROOM.users.size + 1}`, "")
+    console.log(newUser)
     GAME_ROOM.users.set(newUser.uniqueId, newUser)
     res.send(newUser)
 })

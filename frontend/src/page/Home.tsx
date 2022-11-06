@@ -14,7 +14,6 @@ export type User = {
     currLang: string
 }
 
-
 const Home = () => {
     const socket = io("https://cutiehack-socket.taah.dev")
     const [ user, setUser ] = useState<User | undefined>()
