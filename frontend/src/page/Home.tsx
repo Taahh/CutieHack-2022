@@ -7,6 +7,18 @@ import axios from "axios";
 import ConditionalElement from "../component/ConditionalElement";
 import { io } from "socket.io-client";
 
+
+const JAVA_STARTER = "public static class Solution\n" +
+    "{\n" +
+    "    public static int[] solve(int[] nums, int target) {\n" +
+    "\n" +
+    "    }\n" +
+    "}"
+const PYTHON_STARTER = "class Solution:\n" +
+    "    def twoSum(self, nums, target):\n" +
+    "        "
+
+
 export type User = {
     uniqueId: string,
     username: string,
@@ -38,8 +50,9 @@ const Home = () => {
             })
         } else {
             axios.get("https://cutiehack-backend.taah.dev/room/next").then(value => {
-                console.log(value.data)
-                setUser(JSON.parse(value.data) as User)
+                let user = value.data as User
+                user.codes.set("python", PYTHON_STARTER)
+                user.codes.set("java", JAVA_STARTER)
                 console.log(value.data)
                 localStorage.setItem("user", JSON.stringify(value.data as User))
             })
