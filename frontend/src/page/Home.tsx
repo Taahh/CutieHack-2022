@@ -38,7 +38,8 @@ const Home = () => {
             })
         } else {
             axios.get("https://cutiehack-backend.taah.dev/room/next").then(value => {
-                setUser(value.data as User)
+                setUser(JSON.parse(value.data) as User)
+                console.log(value.data)
                 localStorage.setItem("user", JSON.stringify(value.data as User))
             })
         }

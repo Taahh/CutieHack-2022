@@ -39,7 +39,7 @@ APP.get("/room/next", async (req, res) => {
     let newUser = new User(uuid(), `Guest${GAME_ROOM.users.size + 1}`, "")
     console.log(newUser)
     GAME_ROOM.users.set(newUser.uniqueId, newUser)
-    res.send(newUser)
+    res.send(JSON.stringify(newUser))
 })
 
 APP.patch("/room/update/{user}", async (req, res) => {
