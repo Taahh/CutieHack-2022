@@ -24,7 +24,7 @@ const Home = () => {
     const [ chatMessage, setChatMessage ] = useState("")
 
     useEffect(() => {
-        axios.get("ttps://cutiehack-backend.taah.dev/room/chat/history").then(value => {
+        axios.get("https://cutiehack-backend.taah.dev/room/chat/history").then(value => {
             let chat = value.data as string[]
             setChat(chat)
         })
