@@ -7,24 +7,12 @@ import axios from "axios";
 import ConditionalElement from "../component/ConditionalElement";
 import { io } from "socket.io-client";
 
-
-const JAVA_STARTER = "public static class Solution\n" +
-    "{\n" +
-    "    public static int[] solve(int[] nums, int target) {\n" +
-    "\n" +
-    "    }\n" +
-    "}"
-const PYTHON_STARTER = "class Solution:\n" +
-    "    def twoSum(self, nums, target):\n" +
-    "        "
-
-
 export type User = {
     uniqueId: string,
     username: string,
-    codes: Map<string, string>,
-    currLang: string
+    code: string
 }
+
 
 const Home = () => {
     const socket = io("https://cutiehack-socket.taah.dev")
@@ -50,10 +38,7 @@ const Home = () => {
             })
         } else {
             axios.get("https://cutiehack-backend.taah.dev/room/next").then(value => {
-                let user = value.data as User
-                user.codes.set("python", PYTHON_STARTER)
-                user.codes.set("java", JAVA_STARTER)
-                console.log(value.data)
+                setUser(value.data as User)
                 localStorage.setItem("user", JSON.stringify(value.data as User))
             })
         }
@@ -79,7 +64,7 @@ const Home = () => {
         setStdout("")
         setOutput("")
         axios.post("https://cutiehack-backend.taah.dev/room/submit", {
-            code: user?.codes.get(user?.currLang) || "",
+            code: user?.code,
             user: user?.username
         }).then(value => {
             console.log(value)
@@ -119,11 +104,11 @@ const Home = () => {
                 onChange={ value => {
                     if (!user) return
                     let temp = user
-                    temp.codes.set(temp.currLang, value || "")
+                    temp.code = value || ""
                     setUser(temp)
                     localStorage.setItem("user", JSON.stringify(user)) // unoptimized probably!!
                 } }
-                value={ user?.codes.get(user?.currLang) || "" }
+                value={ user?.code }
                 options={ {
                     fontSize: 20
                 } }
