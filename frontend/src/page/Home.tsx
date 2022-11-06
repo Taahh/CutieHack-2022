@@ -24,6 +24,11 @@ const Home = () => {
     const [ chatMessage, setChatMessage ] = useState("")
 
     useEffect(() => {
+        axios.get("ttps://cutiehack-backend.taah.dev/room/chat/history").then(value => {
+            let chat = value.data as string[]
+            setChat(chat)
+        })
+
         if (localStorage.getItem("user")) {
             let temp = JSON.parse(localStorage.getItem("user") as string) as User
             console.log(temp)
@@ -39,11 +44,17 @@ const Home = () => {
         }
         socket.on("submission", args => {
             setChat(prevState => prevState.concat(args))
+            const elm = document.getElementById("chat")
+            if (elm)
+                elm.scrollTop = elm.scrollHeight
         })
 
         socket.on("chat", args => {
-            console.log("HI")
+            // console.log("HI")
             setChat(prevState => prevState.concat(args))
+            const elm = document.getElementById("chat")
+            if (elm)
+                elm.scrollTop = elm.scrollHeight
         })
 
     }, [ setUser ])
@@ -74,7 +85,7 @@ const Home = () => {
         if (chatMessage.trim() === "") return
         console.log("hi")
 
-        const msg = `${(user as User).username}: ${chatMessage}`
+        const msg = `${ (user as User).username }: ${ chatMessage }`
         // console.log(msg)
         axios.post("https://cutiehack-backend.taah.dev/room/chat", {
             chat: msg
@@ -108,7 +119,7 @@ const Home = () => {
 
             <textarea readOnly={ true } className={ style.output } style={ outputStyle } value={ output }/>
 
-            <textarea readOnly={ true } className={ style.chat } value={ chat.join("\n") }/>
+            <textarea readOnly={ true } className={ style.chat } id="chat" value={ chat.join("\n") }/>
             <Form className={ style.form } onSubmit={ event => {
                 event.preventDefault()
                 sendChat()
