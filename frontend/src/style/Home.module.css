@@ -6,7 +6,7 @@
 
 .output {
     position: relative;
-    left: 35.5vw;
+    left: 34.5vw;
     bottom: 95.6vh;
     border-radius: 3px;
     width: 40vw;
@@ -15,12 +15,14 @@
 
 .stdout {
     width: 19vw !important;
+    left: 80.57vw !important;
+    bottom: 143.2vh;
 }
 
 .chat {
     position: relative;
     /*left: 35.5vw;*/
-    right: 4.5vw;
+    right: 5.5vw;
     bottom: 65vh;
     border-radius: 3px;
     width: 40vw;

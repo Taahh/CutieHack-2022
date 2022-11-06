@@ -1,6 +1,6 @@
 import classPlaceholder
 if __name__ == "__main__":
-    solution = Taahh.Solution()
+    solution = classPlaceholder.Solution()
     a = solution.twoSum([2,7,11,15], 9)
     if a != [0, 1]:
         raise Exception("\n\nTest case failed!\nInput: nums = [2, 7, 11, 15]; target = 9\nExpected output: [0, 1]\nYour output: " + str(a))
