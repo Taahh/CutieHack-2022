@@ -28,7 +28,7 @@ APP.post("/room/submit", async (req, res) => {
     const code = data.code
     const user = data.user
     console.log(`${ user } - ${ code }`)
-    const testUser = new User(uuid(), user, "encrypted")
+    const testUser = new User(uuid(), user, "")
     testUser.code = code
     let codeOutput = await executeCode(testUser, res)
     SOCKET.emit("submission", `${testUser.username} has ${codeOutput.error ? "submitted" : "completed"} Two Sum.`)
@@ -55,6 +55,11 @@ APP.post("/room/chat", async (req, res) => {
     const chat = req.body.chat
     console.log(chat)
     SOCKET.emit("chat", chat)
+    GAME_ROOM.chatMessages.push(chat)
+})
+
+APP.get("/room/chat/history", async (req, res) => {
+    res.send(GAME_ROOM.chatMessages)
 })
 // planned routes
 // /room/create POST

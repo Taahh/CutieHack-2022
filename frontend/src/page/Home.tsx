@@ -15,7 +15,7 @@ export type User = {
 
 
 const Home = () => {
-    const socket = io("ws://localhost:3002")
+    const socket = io("https://cutiehack-socket.taah.dev")
     const [ user, setUser ] = useState<User | undefined>()
     const [ output, setOutput ] = useState<string>("")
     const [ outputStyle, setOutputStyle ] = useState<CSSProperties>({})
@@ -28,11 +28,11 @@ const Home = () => {
             let temp = JSON.parse(localStorage.getItem("user") as string) as User
             console.log(temp)
             setUser(temp)
-            axios.post("http://127.0.0.1:3001/room/check", {
+            axios.post("https://cutiehack-backend.taah.dev/room/check", {
                 user: temp
             })
         } else {
-            axios.get("http://127.0.0.1:3001/room/next").then(value => {
+            axios.get("https://cutiehack-backend.taah.dev/room/next").then(value => {
                 setUser(value.data as User)
                 localStorage.setItem("user", JSON.stringify(value.data as User))
             })
@@ -52,9 +52,9 @@ const Home = () => {
     function submitCode(event: React.MouseEvent<HTMLButtonElement>) {
         setStdout("")
         setOutput("")
-        axios.post("http://127.0.0.1:3001/room/submit", {
+        axios.post("https://cutiehack-backend.taah.dev/room/submit", {
             code: user?.code,
-            user: "Taahh"
+            user: user?.username
         }).then(value => {
             console.log(value)
             setOutput(value.data.output)
@@ -76,7 +76,7 @@ const Home = () => {
 
         const msg = `${(user as User).username}: ${chatMessage}`
         // console.log(msg)
-        axios.post("http://127.0.0.1:3001/room/chat", {
+        axios.post("https://cutiehack-backend.taah.dev/room/chat", {
             chat: msg
         }).then(value => console.log(value.status))
         setChatMessage("")
