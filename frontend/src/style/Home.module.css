@@ -12,3 +12,23 @@
     width: 40vw;
     height: 30vh;
 }
+
+.stdout {
+    width: 19vw !important;
+}
+
+.chat {
+    position: relative;
+    /*left: 35.5vw;*/
+    right: 4.5vw;
+    bottom: 65vh;
+    border-radius: 3px;
+    width: 40vw;
+    height: 30vh;
+}
+
+.form {
+    position: relative;
+    bottom: 60vh;
+    left: 40.5vw;
+}

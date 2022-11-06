@@ -24,33 +24,35 @@ const promisifyStream = stream => new Promise((resolve, reject) => {
     stream.on('error', reject)
 });
 
-export async function executeCode(user: User, response?: Response) {
-    if (!fs.existsSync("./runs")) {
-        fs.mkdirSync("./runs")
-    }
-
-    await fs.readFile(TWO_SUM.file, 'utf-8',async (err, data) => {
-        if (err) {
-            console.error(err)
-            return
+export async function executeCode(user: User, response?: Response): Promise<{ error: boolean, output: string, stdout: string }> {
+    return new Promise(async (resolve, reject) => {
+        if (!fs.existsSync("./runs")) {
+            fs.mkdirSync("./runs")
         }
 
-        data = data.replaceAll("classPlaceholder", user.username)
+        await fs.readFile(TWO_SUM.file, 'utf-8', async (err, data) => {
+            if (err) {
+                reject(err)
+                return
+            }
 
-        const PATH = "./runs/" + user.username + ".py"
-        let file = await fs.writeFile(PATH, data + "\n\n\n" + user.code, console.error)
-        python.runFile(PATH).then(async value => {
-            console.log(value)
-            response.send({
-                error: value.stderr != "",
-                output: value.stderr != "" ? value.stderr: `Success \n\n${value.stdout}`
-            })
-            await fs.rm(PATH, console.error)
-        }).catch(console.error)
+            data = data.replaceAll("classPlaceholder", user.username)
 
-        console.log(data)
+            const PATH = "./runs/" + user.username + ".py"
+            await fs.writeFile(PATH, data + "\n\n\n" + user.code, console.error)
+            python.runFile(PATH).then(async value => {
+                console.log(value)
+                let res = {
+                    error: value.stderr != "",
+                    output: value.stderr != "" ? value.stderr : `Success`,
+                    stdout: value.stdout
+                }
+                response.send(res)
+                resolve(res)
+                await fs.rm(PATH, console.error)
+            }).catch(reason => reject(reason))
+        })
     })
-
 
 
 }
