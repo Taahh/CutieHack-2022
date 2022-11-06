@@ -1,13 +1,12 @@
 import { Docker } from "node-docker-api";
 import { User } from "../user/user";
 
-import { python, java } from "compile-run"
+import { python } from "compile-run"
 import { Response } from "express";
 import * as fs from "fs";
 import { Question } from "../question/question";
 
-const TWO_SUM_PYTHON = new Question("01", "Two Sum", "./templates/01-two-sum.py")
-const TWO_SUM_JAVA = new Question("01", "Two Sum", "./templates/01-two-sum.java")
+const TWO_SUM = new Question("01", "Two Sum", "./templates/01-two-sum.py")
 
 const ACTIVE_CONTAINERS: Map<string, User> = new Map<string, User>()
 
@@ -27,51 +26,28 @@ export async function executeCode(user: User, response?: Response): Promise<{ er
             fs.mkdirSync("./runs")
         }
 
-        if (user.currLang == "python") {
-            await fs.readFile(TWO_SUM_PYTHON.file, 'utf-8', async (err, data) => {
-                if (err) {
-                    reject(err)
-                    return
+        await fs.readFile(TWO_SUM.file, 'utf-8', async (err, data) => {
+            if (err) {
+                reject(err)
+                return
+            }
+
+            data = data.replaceAll("classPlaceholder", user.username)
+
+            const PATH = "./runs/" + user.username + ".py"
+            await fs.writeFile(PATH, data + "\n\n\n" + user.code, console.error)
+            python.runFile(PATH).then(async value => {
+                console.log(value)
+                let res = {
+                    error: value.stderr != "",
+                    output: value.stderr != "" ? value.stderr : `Success`,
+                    stdout: value.stdout
                 }
-
-                data = data.replaceAll("classPlaceholder", user.username)
-
-                const PATH = "./runs/" + user.username + ".py"
-                await fs.writeFile(PATH, data + "\n\n\n" + user.codes[user.currLang], console.error)
-                python.runFile(PATH).then(async value => {
-                    console.log(value)
-                    let res = {
-                        error: value.stderr != "",
-                        output: value.stderr != "" ? value.stderr : `Success`,
-                        stdout: value.stdout
-                    }
-                    response.send(res)
-                    resolve(res)
-                    await fs.rm(PATH, console.error)
-                }).catch(reason => reject(reason))
-            })
-        } else if (user.currLang == "java") {
-            await fs.readFile(TWO_SUM_JAVA.file, 'utf-8', async (err, data) => {
-                if (err) {
-                    reject(err)
-                    return
-                }
-
-                const PATH = "./runs/" + user.username + ".java"
-                await fs.writeFile(PATH, data + "\n\n\n" + user.codes[user.currLang], console.error)
-                java.runFile(PATH).then(async value => {
-                    console.log(value)
-                    let res = {
-                        error: value.stderr != "",
-                        output: value.stderr != "" ? value.stderr : `Success`,
-                        stdout: value.stdout
-                    }
-                    response.send(res)
-                    resolve(res)
-                    await fs.rm(PATH, console.error)
-                }).catch(reason => reject(reason))
-            })
-        }
+                response.send(res)
+                resolve(res)
+                await fs.rm(PATH, console.error)
+            }).catch(reason => reject(reason))
+        })
     })
 
 

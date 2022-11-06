@@ -25,11 +25,11 @@ let runShutdown = false
 APP.use(cors(), bodyParser.json(), bodyParser.urlencoded({extended: false}))
 APP.post("/room/submit", async (req, res) => {
     const data = req.body
-    const codes = data.codes
+    const code = data.code
     const user = data.user
-    console.log(`${ user } - ${ codes }`)
+    console.log(`${ user } - ${ code }`)
     const testUser = new User(uuid(), user, "")
-    testUser.codes = codes
+    testUser.code = code
     let codeOutput = await executeCode(testUser, res)
     SOCKET.emit("submission", `${testUser.username} has ${codeOutput.error ? "submitted" : "completed"} Two Sum.`)
     GAME_ROOM.chatMessages.push(`${testUser.username} has ${codeOutput.error ? "submitted" : "completed"} Two Sum.`)
