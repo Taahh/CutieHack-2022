@@ -10,7 +10,8 @@ import { io } from "socket.io-client";
 export type User = {
     uniqueId: string,
     username: string,
-    code: string
+    codes: Map<string, string>,
+    currLang: string
 }
 
 
@@ -64,7 +65,7 @@ const Home = () => {
         setStdout("")
         setOutput("")
         axios.post("https://cutiehack-backend.taah.dev/room/submit", {
-            code: user?.code,
+            code: user?.codes.get(user?.currLang) || "",
             user: user?.username
         }).then(value => {
             console.log(value)
@@ -104,11 +105,11 @@ const Home = () => {
                 onChange={ value => {
                     if (!user) return
                     let temp = user
-                    temp.code = value || ""
+                    temp.codes.set(temp.currLang, value || "")
                     setUser(temp)
                     localStorage.setItem("user", JSON.stringify(user)) // unoptimized probably!!
                 } }
-                value={ user?.code }
+                value={ user?.codes.get(user?.currLang) || "" }
                 options={ {
                     fontSize: 20
                 } }

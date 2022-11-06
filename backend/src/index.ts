@@ -4,7 +4,7 @@ import cors from "cors"
 import { User } from "./user/user";
 
 import { uuid } from "uuidv4"
-import { executeCode } from "./container/docker";
+import { executeCode } from "./container/compiling";
 import { establishDatabase } from "./database/sqlite";
 import { loadUsers } from "./user/manager";
 import { Server } from "socket.io";
@@ -25,19 +25,26 @@ let runShutdown = false
 APP.use(cors(), bodyParser.json(), bodyParser.urlencoded({extended: false}))
 APP.post("/room/submit", async (req, res) => {
     const data = req.body
-    const code = data.code
+    const codes = data.codes
     const user = data.user
-    console.log(`${ user } - ${ code }`)
+    console.log(`${ user } - ${ codes }`)
     const testUser = new User(uuid(), user, "")
-    testUser.code = code
+    testUser.codes = codes
     let codeOutput = await executeCode(testUser, res)
     SOCKET.emit("submission", `${testUser.username} has ${codeOutput.error ? "submitted" : "completed"} Two Sum.`)
+    GAME_ROOM.chatMessages.push(`${testUser.username} has ${codeOutput.error ? "submitted" : "completed"} Two Sum.`)
 })
 
 APP.get("/room/next", async (req, res) => {
     let newUser = new User(uuid(), `Guest${GAME_ROOM.users.size + 1}`, "")
     GAME_ROOM.users.set(newUser.uniqueId, newUser)
     res.send(newUser)
+})
+
+APP.patch("/room/update/{user}", async (req, res) => {
+    let user = req.params["user"] as User
+    GAME_ROOM.users.set(user.uniqueId, user)
+    res.status(200)
 })
 
 APP.post("/room/check", async (req, res) => {
