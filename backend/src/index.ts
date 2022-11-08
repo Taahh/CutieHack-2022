@@ -34,7 +34,10 @@ APP.post("/room/submit", async (req, res) => {
 
     let problem = 'Two Sum'
     let [emoji, verb] = codeOutput.error ? ['X', 'submitted'] : ['+', 'completed']
-    let msg = `[${verb} ${problem}]`
+    let msg = {
+        userId: 'aaaa',
+        content: `[${verb} ${problem}]`
+    }
     SOCKET.emit("chat", msg)
     GAME_ROOM.chatMessages.push(msg)
 })
@@ -60,17 +63,31 @@ APP.post("/room/check", async (req, res) => {
     }
     res.status(200)
 })
-
-
 APP.post("/room/chat", async (req, res) => {
-    const chat = req.body.chat
-    console.log(chat)
-    SOCKET.emit("chat", chat)
-    GAME_ROOM.chatMessages.push(chat)
+    const content = req.body.content
+    console.log(content)
+    let msg = {
+        userId: 'aaaa',
+        content: content
+    }
+    SOCKET.emit("chat", msg)
+    GAME_ROOM.chatMessages.push(msg)
 })
 APP.get("/room/chat/history", async (req, res) => {
     res.send(GAME_ROOM.chatMessages)
 })
+
+
+
+APP.post("/guest/register", async (req, res) => {
+
+    var password = req.body.password;
+    var id = uuid();
+    let newUser = new User(id, `Guest ${id}`, password)
+    GAME_ROOM.users.set(newUser.uniqueId, newUser)
+    res.send(newUser)
+})
+
 // planned routes
 // /room/create POST
 // /room/join/{code} POST

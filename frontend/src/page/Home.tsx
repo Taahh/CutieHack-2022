@@ -9,6 +9,7 @@ import { io } from "socket.io-client";
 
 import Guest from '../img/guest.png'
 
+
 export type User = {
     uniqueId: string,
     username: string,
@@ -19,6 +20,12 @@ type Problem = {
     title: string,
     desc: string
 }
+
+type ChatMessage = {
+    userId: string,
+    content: string
+}
+
 const problems: Problem[] = [
     { title: "Two Sum", desc: "aaaa" },
     { title: "Longest Common Subsequence", desc: "aaaaaaaaaaaaaaaaaa" },
@@ -46,37 +53,52 @@ const Home = () => {
     const socket = io(socket_url)
     const [ user, setUser ] = useState<User | undefined>()
     const [ output, setOutput ] = useState<string>("")
-    const [ stdout, setStdout ] = useState<string>("")
-    const [ chatLog, setChatLog ] = useState<string[]>([])
+    const [stdout, setStdout] = useState<string>("")
+    const [chatLog, setChatLog] = useState<ChatMessage[]>([])
     const [chatMessage, setChatMessage] = useState("")
     const [lang, setLang] = useState<string>("python")
     useEffect(() => {
         //Get chat history
         axios.get(url("/room/chat/history")).then(value => {
-            setChatLog(value.data as string[])
+            setChatLog(value.data as ChatMessage[])
         })
 
         //Load user info
         if (localStorage.getItem("user")) {
-            let temp = JSON.parse(localStorage.getItem("user") as string) as User
-            console.log(temp)
-            setUser(temp)
+            let guest = JSON.parse(localStorage.getItem("user") as string) as User
+            console.log(guest)
+            setUser(guest)
             axios.post(url("/room/check"), {
-                user: temp
+                user: guest
             })
         } else {
-            axios.get(url("/room/next")).then(value => {
-                setUser(value.data as User)
-                localStorage.setItem("user", JSON.stringify(value.data as User))
+
+
+            let password = Math.random().toString(36).substr(2, 8)
+
+            axios.post(url("/guest/register"), {
+                password: password
+
+            }).then(value => {
+                var identity = value.data as User
+                setUser(identity)
+                localStorage.setItem("user", JSON.stringify(identity))
             })
         }
         //Socket events
         socket.on("chat", args => {
-            setChatLog(prevState => prevState.concat(args))
-            const elm = document.getElementById("chatLog")
-            if (elm)
-                elm.scrollTop = elm.scrollHeight
+
+            setChatLog(log => log.concat(args))
+
+            scrollChat();
         })
+        scrollChat();
+
+        function scrollChat() {
+            const log = document.getElementById("chatLog")
+            if (log)
+                log.scrollTop = log.scrollHeight
+        }
     }, [ setUser ])
 
 
@@ -99,10 +121,9 @@ const Home = () => {
         if (chatMessage.trim() === "") return
         console.log("hi")
 
-        const msg = `${ (user as User).username }: ${ chatMessage }`
         // console.log(msg)
         axios.post(url("/room/chat"), {
-            chat: msg
+            content: chatMessage
         }).then(value => console.log(value.status))
         setChatMessage("")
     }
@@ -178,13 +199,13 @@ const Home = () => {
                                 </div>)}
                         </div>)}
                 </div>
-                <div style={{ width: "100%", height: "300px", overflowX: "hidden", overflowY: "auto" }}>
-                    {chatLog.map(str =>
+                <div id="chatLog" style={{ width: "100%", height: "300px", overflowX: "hidden", overflowY: "auto" }}>
+                    {chatLog.map(msg =>
                         <div style={{display:"flex", color:"white", border:"1px gray solid"}}>
                             <img src={Guest} style={{ imageRendering: "pixelated", margin: "8px", width: "48px", height: "48px" }}></img>
                             <div>
                                 <p style={{ margin: "0px", marginTop: "4px" }}>User</p>
-                                <p style={{ wordBreak: "break-word" }}>{str}</p>
+                                <p style={{ wordBreak: "break-word" }}>{msg.content}</p>
                             </div>
                         </div>)}
                 </div>
