@@ -31,8 +31,15 @@ APP.post("/room/submit", async (req, res) => {
     const testUser = new User(uuid(), user, "")
     testUser.code = code
     let codeOutput = await executeCode(testUser, res)
-    SOCKET.emit("submission", `${testUser.username} has ${codeOutput.error ? "submitted" : "completed"} Two Sum.`)
-    GAME_ROOM.chatMessages.push(`${testUser.username} has ${codeOutput.error ? "submitted" : "completed"} Two Sum.`)
+
+    let problem = 'Two Sum'
+    let [emoji, verb] = codeOutput.error ? ['X', 'submitted'] : ['+', 'completed']
+    let msg = {
+        userId: 'aaaa',
+        content: `[${verb} ${problem}]`
+    }
+    SOCKET.emit("chat", msg)
+    GAME_ROOM.chatMessages.push(msg)
 })
 
 APP.get("/room/next", async (req, res) => {
@@ -56,18 +63,31 @@ APP.post("/room/check", async (req, res) => {
     }
     res.status(200)
 })
-
-
 APP.post("/room/chat", async (req, res) => {
-    const chat = req.body.chat
-    console.log(chat)
-    SOCKET.emit("chat", chat)
-    GAME_ROOM.chatMessages.push(chat)
+    const content = req.body.content
+    console.log(content)
+    let msg = {
+        userId: 'aaaa',
+        content: content
+    }
+    SOCKET.emit("chat", msg)
+    GAME_ROOM.chatMessages.push(msg)
 })
-
 APP.get("/room/chat/history", async (req, res) => {
     res.send(GAME_ROOM.chatMessages)
 })
+
+
+
+APP.post("/guest/register", async (req, res) => {
+
+    var password = req.body.password;
+    var id = uuid();
+    let newUser = new User(id, `Guest ${id}`, password)
+    GAME_ROOM.users.set(newUser.uniqueId, newUser)
+    res.send(newUser)
+})
+
 // planned routes
 // /room/create POST
 // /room/join/{code} POST
@@ -83,18 +103,10 @@ const SERVER = APP.listen(PORT, async () => {
     console.log(`Express Server started on http://127.0.0.1:${ PORT }`)
     establishDatabase()
     await loadUsers()
-    // let user = new User("Taah")
-    // user.program.code = "print(\"hi\")"
-    // let container = await createContainer(user)
-    // console.log(`Python created? ${container}`)
-    // console.log(await executeCode(user))
-
 })
-
 process.on('exit', async () => {
     await shutdown()
 })
-
 process.on('SIGINT', async () => {
     await shutdown()
 })
