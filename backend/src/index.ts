@@ -31,8 +31,12 @@ APP.post("/room/submit", async (req, res) => {
     const testUser = new User(uuid(), user, "")
     testUser.code = code
     let codeOutput = await executeCode(testUser, res)
-    SOCKET.emit("submission", `${testUser.username} has ${codeOutput.error ? "submitted" : "completed"} Two Sum.`)
-    GAME_ROOM.chatMessages.push(`${testUser.username} has ${codeOutput.error ? "submitted" : "completed"} Two Sum.`)
+
+    let problem = 'Two Sum'
+    let [emoji, verb] = codeOutput.error ? ['X', 'submitted'] : ['+', 'completed']
+    let msg = `[${verb} ${problem}]`
+    SOCKET.emit("chat", msg)
+    GAME_ROOM.chatMessages.push(msg)
 })
 
 APP.get("/room/next", async (req, res) => {
@@ -64,7 +68,6 @@ APP.post("/room/chat", async (req, res) => {
     SOCKET.emit("chat", chat)
     GAME_ROOM.chatMessages.push(chat)
 })
-
 APP.get("/room/chat/history", async (req, res) => {
     res.send(GAME_ROOM.chatMessages)
 })
@@ -83,18 +86,10 @@ const SERVER = APP.listen(PORT, async () => {
     console.log(`Express Server started on http://127.0.0.1:${ PORT }`)
     establishDatabase()
     await loadUsers()
-    // let user = new User("Taah")
-    // user.program.code = "print(\"hi\")"
-    // let container = await createContainer(user)
-    // console.log(`Python created? ${container}`)
-    // console.log(await executeCode(user))
-
 })
-
 process.on('exit', async () => {
     await shutdown()
 })
-
 process.on('SIGINT', async () => {
     await shutdown()
 })

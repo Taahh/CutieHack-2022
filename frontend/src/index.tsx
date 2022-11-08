@@ -26,7 +26,7 @@ root.render(
     <Fragment>
         <Navbar bg="warning" variant="light" expand="lg">
             <Container>
-                <Nav.Link href="/">Home</Nav.Link>
+                <Nav.Link href="/">OurSearch</Nav.Link>
             </Container>
             <Navbar.Collapse>
                 <Nav className="ms-auto container-fluid justify-content-end">

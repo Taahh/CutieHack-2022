@@ -2,8 +2,9 @@
   --custom-color: #b39b3b;
 }
 body {
-  background-color: #313632;
+  background-color: #002244;
   overflow: hidden;
+  font-family:'Verdana'
 }
 
 .gray-button {
